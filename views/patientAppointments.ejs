@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <title>Dashboard</title>
+  </head>
+  <body>
+    <div class="sidebar">
+      <div class="logo">
+        <img src="assets/profile.png" alt="logo" />
+
+        <div class="logo-description">
+          <p class="description">Patient</p>
+          <p class="'description"><%= user.email %></p>
+        </div>
+      </div>
+
+      <hr />
+      <ul class="menu">
+        <li><i class="fas fa-home"></i> <a href="/patient-dashboard">Dashboard</a></li>
+        <li><i class="fas fa-calendar-alt"></i> <a href="#">Appointments</a></li>
+        <li><i class="fas fa-user-md"></i> <a href="/patient-doctors">Doctors</a></li>
+      </ul>
+    </div>
+
+    <div class="Side">
+      <div class="topbar">
+        <div class="date">
+        
+        </div>
+        
+        <div class="logout">
+          <form action="/logout" method="GET">
+            <button type="submit">Logout</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="appointments-container">
+        <h2>Upcoming Appointments</h2>
+        <% if (upcomingAppointments.length === 0) { %>
+          <p>No upcoming appointments.</p>
+        <% } else { %>
+          <ul>
+            <% upcomingAppointments.forEach(appointment => { %>
+              <li>
+                Appointment with Dr. <%= appointment.doctorName %> on <%= new Date(appointment.date).toLocaleDateString() %>
+              </li>
+            <% }); %>
+          </ul>
+        <% } %>
+    
+        <h2>Past Appointments</h2>
+        <% if (pastAppointments.length === 0) { %>
+          <p>No past appointments.</p>
+        <% } else { %>
+          <ul>
+            <% pastAppointments.forEach(appointment => { %>
+              <li>
+                Appointment with Dr. <%= appointment.doctorName %> on <%= new Date(appointment.date).toLocaleDateString() %>
+              </li>
+            <% }); %>
+          </ul>
+        <% } %>
+      </div>
+    </div>
+  </body>
+</html>
