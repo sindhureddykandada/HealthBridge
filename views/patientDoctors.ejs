@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+  />
+  <title>Dashboard</title>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="logo">
+      <img src="assets/profile.png" alt="logo" />
+
+      <div class="logo-description">
+        <p class="description">Patient</p>
+        <p class="description"><%= user.email %></p>
+      </div>
+    </div>
+
+    <ul class="menu">
+      <li><i class="fas fa-home"></i> <a href="/patient-dashboard">Dashboard</a></li>
+      <li><i class="fas fa-calendar-alt"></i> <a href="/patient-appointments?userId=<%= user._id %>">Appointments</a></li>
+      <li><i class="fas fa-user-md"></i> <a href="#">Doctors</a></li>
+    </ul>
+  </div>
+
+  <div class="Side">
+    <div class="topbar">
+      <div class="date"></div>
+      <div class="logout">
+        <form action="/logout" method="GET">
+          <button type="submit">Logout</button>
+        </form>
+      </div>
+    </div>
+    <div class="appointments-container">
+      <h2>Select your doctor</h2>
+      <div class="container">
+        <% doctors.forEach((doctor, index) => { %> 
+          <div class="doctor-card">
+            <div class="doctor-logo">
+              <img src="assets/doctor.png" alt="Doctor Photo" />
+            </div>
+            <div class="doctor-name">Dr. <%= doctor.fullName %></div>
+            <div class="doctor-designation"><%= doctor.specialization %></div>
+
+            <form method="GET" action="/patient-bookappointments" onsubmit="return validateDate(<%= index %>)">
+              <input type="hidden" name="doctorId" value="<%= doctor._id %>">
+              <input type="hidden" name="userId" value="<%= user._id %>">
+
+              <label for="appointmentDate<%= index %>">Select Date:</label>
+              <input type="date" id="appointmentDate<%= index %>" name="appointmentDate" required>
+
+              <button type="submit" class="see-more-button">Book appointment</button>
+            </form>
+
+            <script>
+              function setMinDate(index) {
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('appointmentDate' + index).setAttribute('min', today);
+              }
+
+              window.onload = function() {
+                <% doctors.forEach((doctor, index) => { %>
+                  setMinDate(<%= index %>);
+                <% }); %>
+              };
+
+              function validateDate(index) {
+                const appointmentDate = new Date(document.getElementById('appointmentDate' + index).value);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                if (appointmentDate < today) {
+                  alert("You cannot book an appointment for a past date.");
+                  return false;
+                }
+
+                return true;
+              }
+            </script>
+          </div>
+        <% }); %>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
