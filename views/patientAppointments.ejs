@@ -4,12 +4,69 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/dashboard.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
     <title>Dashboard</title>
-  </head>
+    <style>
+        .appointment-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .status-scheduled { background: #ffd700; color: #000; }
+        .status-confirmed { background: #90EE90; color: #000; }
+        .status-completed { background: #4682B4; color: #fff; }
+        .status-cancelled { background: #FF6B6B; color: #fff; }
+
+        .prescription-section {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .medicine-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .medicine-item {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .doctor-notes {
+            margin-top: 10px;
+            font-style: italic;
+            color: #666;
+        }
+
+        .cancel-btn {
+            background: #FF6B6B;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .cancel-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
   <body>
     <div class="sidebar">
       <div class="logo">
@@ -45,30 +102,91 @@
       <div class="appointments-container">
         <h2>Upcoming Appointments</h2>
         <% if (upcomingAppointments.length === 0) { %>
-          <p>No upcoming appointments.</p>
+            <p>No upcoming appointments.</p>
         <% } else { %>
-          <ul>
             <% upcomingAppointments.forEach(appointment => { %>
-              <li>
-                Appointment with Dr. <%= appointment.doctorName %> on <%= new Date(appointment.date).toLocaleDateString() %>
-              </li>
+                <div class="appointment-card">
+                    <div class="appointment-header">
+                        <h3>Dr. <%= appointment.doctorName %></h3>
+                        <span class="status-badge status-<%= appointment.status %>">
+                            <%= appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1) %>
+                        </span>
+                    </div>
+                    <div class="appointment-details">
+                        <p>
+                            <i class="fas fa-calendar"></i> 
+                            <%= new Date(appointment.date).toLocaleString('en-US', {
+                                weekday: 'long',
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            }) %>
+                        </p>
+                        <p><i class="fas fa-user-md"></i> Specialization: <%= appointment.doctorSpecialization %></p>
+                        
+                        <% if (appointment.status === 'scheduled') { %>
+                            <form action="/cancel-appointment" method="POST" style="display: inline;">
+                                <input type="hidden" name="appointmentId" value="<%= appointment._id %>">
+                                <button type="submit" class="cancel-btn">Cancel Appointment</button>
+                            </form>
+                        <% } %>
+                    </div>
+                </div>
             <% }); %>
-          </ul>
         <% } %>
-    
+
         <h2>Past Appointments</h2>
         <% if (pastAppointments.length === 0) { %>
-          <p>No past appointments.</p>
+            <p>No past appointments.</p>
         <% } else { %>
-          <ul>
             <% pastAppointments.forEach(appointment => { %>
-              <li>
-                Appointment with Dr. <%= appointment.doctorName %> on <%= new Date(appointment.date).toLocaleDateString() %>
-              </li>
+                <div class="appointment-card">
+                    <div class="appointment-header">
+                        <h3>Dr. <%= appointment.doctorName %></h3>
+                        <span class="status-badge status-<%= appointment.status %>">
+                            <%= appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1) %>
+                        </span>
+                    </div>
+                    <div class="appointment-details">
+                        <p>
+                            <i class="fas fa-calendar"></i> 
+                            <%= new Date(appointment.date).toLocaleString('en-US', {
+                                weekday: 'long',
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                            }) %>
+                        </p>
+                        <p><i class="fas fa-user-md"></i> Specialization: <%= appointment.doctorSpecialization %></p>
+                        
+                        <% if (appointment.prescription) { %>
+                            <div class="prescription-section">
+                                <h4><i class="fas fa-prescription"></i> Prescription</h4>
+                                <% if (appointment.prescription.medicines && appointment.prescription.medicines.length > 0) { %>
+                                    <ul class="medicine-list">
+                                        <% appointment.prescription.medicines.forEach(medicine => { %>
+                                            <li class="medicine-item">
+                                                <strong><%= medicine.name %></strong> - 
+                                                <%= medicine.dosage %> for <%= medicine.duration %>
+                                            </li>
+                                        <% }); %>
+                                    </ul>
+                                <% } %>
+                                <% if (appointment.prescription.notes) { %>
+                                    <div class="doctor-notes">
+                                        <strong>Doctor's Notes:</strong>
+                                        <p><%= appointment.prescription.notes %></p>
+                                    </div>
+                                <% } %>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
             <% }); %>
-          </ul>
         <% } %>
-      </div>
+    </div>
     </div>
   </body>
 </html>
