@@ -85,10 +85,21 @@
           />
         </div>
         <div class="form-group">
-          <label for="userType">User Type:</label>
-          <select id="userType" name="userType">
-            <option value="patient">Patient</option>
-          </select>
+          <label for="userType">Select User Type:</label>
+            <select id="userType" name="userType">
+              <option value="doctor">Doctor</option>
+              <option value="patient">Patient</option>
+              <option value="admin">Admin</option>
+            </select>
+        </div>
+        <div class="form-group">
+          <label for="specialization">Specialization</label>
+          <input
+            type="text"
+            id="specialization"
+            name="specialization"
+            placeholder="Enter Specialization if you are a doctor"
+          />
         </div>
         <button type="submit" class="btn-login">Signup</button>
       </form>
