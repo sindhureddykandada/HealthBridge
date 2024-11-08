@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <title>Dashboard</title>
+  </head>
+  <body>
+    <div class="sidebar">
+      <div class="logo">
+        <img src="assets/profile.png" alt="logo" />
+
+        <div class="logo-description">
+          <p class="description">Doctor</p>
+          <p class="'description"><%= user.email %></p>
+        </div>
+      </div>
+
+      <hr />
+      <ul class="menu">
+        <li><i class="fas fa-home"></i> <a href="#">Dashboard</a></li>
+        <li><i class="fas fa-calendar-alt"></i> <a href="/doctor-appointments?userId=<%= user._id %>">Appointments</a></li>
+      </ul>
+    </div>
+
+    <div class="Side">
+      <div class="topbar">
+        <div class="date">
+        
+        </div>
+        
+        <div class="logout">
+          <form action="/logout" method="GET">
+            <button type="submit">Logout</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="appointments-container"> 
+
+        <div class="profile-container">
+          <div class="profile-name"><%= user.fullName %></div>
+          <div class="profile-info">
+            <span class="profile-info-label">Email:</span>
+            <span class="profile-info-value"><%= user.email %></span>
+          </div>
+          <div class="profile-info">
+            <span class="profile-info-label">Department:</span>
+            <span class="profile-info-value"><%= user.specialization %></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
