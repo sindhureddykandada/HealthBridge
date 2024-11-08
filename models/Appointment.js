@@ -15,6 +15,24 @@ const appointmentSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  status: {
+    type: String,
+    enum: ['scheduled', 'confirmed', 'completed', 'cancelled'],
+    default: 'scheduled'
+  },
+  prescription: {
+    medicines: [{
+      name: String,
+      dosage: String,
+      duration: String
+    }],
+    notes: String,
+    date: Date
+  },
+  notificationSent: {
+    type: Boolean,
+    default: false
+  }
 }, { timestamps: true });
 
 const Appointment = mongoose.model('Appointment', appointmentSchema);
