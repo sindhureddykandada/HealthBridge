@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <title>Doctor Appointments</title>
+    <style>
+        .appointments-section {
+            margin: 20px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .appointment-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+
+        .status-scheduled { background: #ffd700; color: #000; }
+        .status-confirmed { background: #90EE90; color: #000; }
+        .status-completed { background: #4682B4; color: #fff; }
+        .status-cancelled { background: #FF6B6B; color: #fff; }
+
+        .action-buttons {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .confirm-btn { background: #90EE90; color: #000; }
+        .complete-btn { background: #4682B4; color: #fff; }
+        .prescribe-btn { background: #8A2BE2; color: #fff; }
+
+        .prescription-form {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .prescription-form.show {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .medicine-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .medicine-list {
+            margin-top: 10px;
+        }
+
+        #addMedicine {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <img src="assets/profile.png" alt="logo" />
+            <div class="logo-description">
+                <p class="description">Doctor</p>
+                <p class="description"><%= user.email %></p>
+            </div>
+        </div>
+        <hr />
+        <ul class="menu">
+            <li><i class="fas fa-home"></i> <a href="/doctor-dashboard">Dashboard</a></li>
+            <li><i class="fas fa-calendar-alt"></i> <a href="#">Appointments</a></li>
+        </ul>
+    </div>
+    <div class="Side">
+        <div class="topbar">
+            <div class="date"></div>
+            <div class="logout">
+                <form action="/logout" method="GET">
+                    <button type="submit">Logout</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="appointments-container">
+            <!-- Upcoming Appointments Section -->
+            <div class="appointments-section">
+                <h2>Upcoming Appointments</h2>
+                <% if (upcomingAppointments.length === 0) { %>
+                    <p>No upcoming appointments scheduled</p>
+                <% } else { %>
+                    <% upcomingAppointments.forEach(appointment => { %>
+                        <div class="appointment-card">
+                            <h3>
+                                Patient: <%= appointment.patient.fullName %>
+                                <span class="status-badge status-<%= appointment.status %>">
+                                    <%= appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1) %>
+                                </span>
+                            </h3>
+                            <p>
+                                <i class="fas fa-calendar"></i> 
+                                <%= appointment.formattedDate %>
+                            </p>
+                            <div class="action-buttons">
+                                <% if (appointment.status === 'scheduled') { %>
+                                    <form action="/update-appointment-status" method="POST" style="display: inline;">
+                                        <input type="hidden" name="appointmentId" value="<%= appointment._id %>">
+                                        <input type="hidden" name="status" value="confirmed">
+                                        <button type="submit" class="action-btn confirm-btn">Confirm Appointment</button>
+                                    </form>
+                                <% } %>
+                                <% if (appointment.status === 'confirmed') { %>
+                                    <form action="/update-appointment-status" method="POST" style="display: inline;">
+                                        <input type="hidden" name="appointmentId" value="<%= appointment._id %>">
+                                        <input type="hidden" name="status" value="completed">
+                                        <button type="submit" class="action-btn complete-btn">Mark as Completed</button>
+                                    </form>
+                                <% } %>
+                                <% if (appointment.status === 'completed') { %>
+                                    <button onclick="togglePrescriptionForm('<%= appointment._id %>')" 
+                                            class="action-btn prescribe-btn">
+                                        Add Prescription
+                                    </button>
+                                <% } %>
+                            </div>
+
+                            <!-- Prescription Form -->
+                            <div id="prescriptionForm-<%= appointment._id %>" class="prescription-form">
+                                <form action="/add-prescription" method="POST">
+                                    <input type="hidden" name="appointmentId" value="<%= appointment._id %>">
+                                    
+                                    <div class="form-group">
+                                        <label>Medicines:</label>
+                                        <div id="medicineInputs">
+                                            <div class="medicine-input">
+                                                <input type="text" name="medicines[0][name]" placeholder="Medicine name" required>
+                                                <input type="text" name="medicines[0][dosage]" placeholder="Dosage" required>
+                                                <input type="text" name="medicines[0][duration]" placeholder="Duration" required>
+                                            </div>
+                                        </div>
+                                        <button type="button" id="addMedicine" onclick="addMedicineInput()">
+                                            Add More Medicine
+                                        </button>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Notes:</label>
+                                        <textarea name="notes" rows="4" placeholder="Additional notes or instructions"></textarea>
+                                    </div>
+
+                                    <button type="submit" class="action-btn prescribe-btn">Save Prescription</button>
+                                </form>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } %>
+            </div>
+
+            <!-- Past Appointments Section -->
+            <div class="appointments-section">
+                <h2>Past Appointments</h2>
+                <% if (pastAppointments.length === 0) { %>
+                    <p>No past appointments</p>
+                <% } else { %>
+                    <% pastAppointments.forEach(appointment => { %>
+                        <div class="appointment-card">
+                            <h3>
+                                Patient: <%= appointment.patient.fullName %>
+                                <span class="status-badge status-<%= appointment.status %>">
+                                    <%= appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1) %>
+                                </span>
+                            </h3>
+                            <p>
+                                <i class="fas fa-calendar"></i> 
+                                <%= appointment.formattedDate %>
+                            </p>
+                            
+                            <% if (appointment.prescription) { %>
+                                <div class="prescription-details">
+                                    <h4>Prescription Details</h4>
+                                    <div class="medicine-list">
+                                        <% appointment.prescription.medicines.forEach(medicine => { %>
+                                            <p>
+                                                - <%= medicine.name %> | <%= medicine.dosage %> | <%= medicine.duration %>
+                                            </p>
+                                        <% }); %>
+                                    </div>
+                                    <% if (appointment.prescription.notes) { %>
+                                        <p><strong>Notes:</strong> <%= appointment.prescription.notes %></p>
+                                    <% } %>
+                                </div>
+                            <% } %>
+                        </div>
+                    <% }); %>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePrescriptionForm(appointmentId) {
+            const form = document.getElementById(`prescriptionForm-${appointmentId}`);
+            form.classList.toggle('show');
+        }
+
+        let medicineCount = 1;
+        function addMedicineInput() {
+            const container = document.getElementById('medicineInputs');
+            const div = document.createElement('div');
+            div.className = 'medicine-input';
+            div.innerHTML = `
+                <input type="text" name="medicines[${medicineCount}][name]" placeholder="Medicine name" required>
+                <input type="text" name="medicines[${medicineCount}][dosage]" placeholder="Dosage" required>
+                <input type="text" name="medicines[${medicineCount}][duration]" placeholder="Duration" required>
+            `;
+            container.appendChild(div);
+            medicineCount++;
+        }
+    </script>
+</body>
+</html>
