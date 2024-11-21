@@ -198,9 +198,8 @@ app.get("/logout", function (req, res) {
   else req.session.isUser = false;
   return res.redirect("/");
 });
-
-app.listen(3000, function () {
+const port = process.env.PORT;
+app.listen(port, function () {
   console.log("server started working on port 3000");
 });
-
 module.exports = app;
