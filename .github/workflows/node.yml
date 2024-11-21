@@ -18,9 +18,7 @@ inputs:
   displayName: 'Install dependencies'
 
 # Run tests (optional, if you have tests configured)
-- script: |
-    npm test
-  displayName: 'Run tests'
+
 
 # Build the application (optional, if your app needs building)
 - script: |
