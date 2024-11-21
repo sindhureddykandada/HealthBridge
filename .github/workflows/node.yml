@@ -3,7 +3,7 @@ name: CI/CD Pipeline for Node.js to Azure
 on:
   push:
     branches:
-      - main  # Adjust if using a different default branch
+      - main1  # Adjust if using a different default branch
 
 jobs:
   build-and-deploy:
