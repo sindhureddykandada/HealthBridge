@@ -18,16 +18,15 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16' # Adjust the version based on your project
+          node-version: '20' # Adjust the version based on your project
 
       # Install dependencies
       - name: Install dependencies
         run: npm install
 
-
-      # Build the application (if applicable)
-      - name: Build project
-        run: npm run build
+      # # Build the application (if applicable)
+      # - name: Build project
+      #   run: npm run build
 
       # Deploy to Azure
       - name: Deploy to Azure Web App
