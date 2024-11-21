@@ -1,33 +1,41 @@
-trigger:
-  branches:
-    include:
-      - main
+name: CI/CD Pipeline for Node.js to Azure
 
-pool:
-  vmImage: 'ubuntu-latest'
+on:
+  push:
+    branches:
+      - main  # Adjust if using a different default branch
 
-steps:
-# Install Node.js
-- task: UseNode@1
-inputs:
-    version: '16.x' # Adjust based on your Node.js version
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
 
-# Install dependencies
--  script: |
-    npm install
-  displayName: 'Install dependencies'
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-# Run tests (optional, if you have tests configured)
+      # Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16' # Adjust the version based on your project
 
+      # Install dependencies
+      - name: Install dependencies
+        run: npm install
 
-# Build the application (optional, if your app needs building)
-- script: |
-    npm run build
-  displayName: 'Build application'
+      # Run tests (if applicable)
+      - name: Run tests
+        run: npm test
 
-# Deploy to Azure Web App
-- task: AzureWebApp@1
-  inputs:
-    azureSubscription: 'AzureServiceConnectionhealthbridge-app'
-    appName: 'healthbridge-app'
-    package: $(System.DefaultWorkingDirectory)
+      # Build the application (if applicable)
+      - name: Build project
+        run: npm run build
+
+      # Deploy to Azure
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: "healthbridge-app" # Replace with your Azure App name
+          slot-name: "production"
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
