@@ -23,17 +23,16 @@ jobs:
       # # Build the application (if applicable)
       - name: AZ Login
         run: |
-          ${{ secrets.AZ_LOGIN }}
-      - name: AZ Deploy
-        run: |
-          zip -r app.zip .
-          az webapp deployment source config-zip --resource-group AppDeploymentRG --name healthbridge-app --src app.zip
+          npm install
+      # - name: AZ Deploy
+      #   run: |
+      #     zip -r app.zip .
+      #     az webapp deployment source config-zip --resource-group AppDeploymentRG --name healthbridge-app --src app.zip
           
 
-      # # Deploy to Azure
-      # - name: Deploy to Azure Web App
-      #   uses: azure/webapps-deploy@v2
-      #   with:
-      #     app-name: "healthbridge-app" # Replace with your Azure App name
-      #     slot-name: "production"
-      #     publish-profile: ${{ secrets.HEALTH_BRIDGE_SECRETS }}
+      # Deploy to Azure
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: "HealthBridgeApp" # Replace with your Azure App name
+          publish-profile: ${{ secrets.HEALTH_BRIDGE_SECRETS }}
