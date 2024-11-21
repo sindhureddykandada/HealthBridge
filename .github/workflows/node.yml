@@ -25,13 +25,15 @@ jobs:
         run: npm install
 
       # # Build the application (if applicable)
-      # - name: Build project
-      #   run: npm run build
+      - name: AZ Login
+        run: |
+          $(AZ_LOGIN)
+          
 
-      # Deploy to Azure
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: "healthbridge-app" # Replace with your Azure App name
-          slot-name: "production"
-          publish-profile: ${{ secrets.HEALTH_BRIDGE_SECRETS }}
+      # # Deploy to Azure
+      # - name: Deploy to Azure Web App
+      #   uses: azure/webapps-deploy@v2
+      #   with:
+      #     app-name: "healthbridge-app" # Replace with your Azure App name
+      #     slot-name: "production"
+      #     publish-profile: ${{ secrets.HEALTH_BRIDGE_SECRETS }}
