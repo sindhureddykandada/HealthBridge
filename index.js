@@ -200,6 +200,6 @@ app.get("/logout", function (req, res) {
 });
 const port = process.env.PORT;
 app.listen(port, function () {
-  console.log("server started working on port 3000");
+  console.log("server started working on port :", port);
 });
 module.exports = app;
