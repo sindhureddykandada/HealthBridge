@@ -23,7 +23,7 @@ jobs:
       # # Build the application (if applicable)
       - name: AZ Login
         run: |
-          ${{ AZ_LOGIN }}
+          ${{ secrets.AZ_LOGIN }}
           
 
       # # Deploy to Azure
