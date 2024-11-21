@@ -20,14 +20,10 @@ jobs:
         with:
           node-version: '20' # Adjust the version based on your project
 
-      # Install dependencies
-      - name: Install dependencies
-        run: npm install
-
       # # Build the application (if applicable)
       - name: AZ Login
         run: |
-          $(AZ_LOGIN)
+          ${{ AZ_LOGIN }}
           
 
       # # Deploy to Azure
