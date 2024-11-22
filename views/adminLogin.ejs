@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login</title>
+    <link rel="stylesheet" type="text/css" href="/css/login.css" />
+</head>
+<body>
+    <div class="container">
+        <div class="left-pane">
+            <img src="/assets/login_image1.jpg" alt="Login Image" />
+        </div>
+        <div class="right-pane">
+            <h2>Admin Login</h2>
+            <form method="POST" action="/admin-login">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required />
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required />
+                </div>
+                <button type="submit" class="btn-login">Login</button>
+            </form>
+            <% if (showErrorMessage) { %>
+                <p class="error-message"><%= errorMessage %></p>
+            <% } %>
+        </div>
+    </div>
+</body>
+</html>
