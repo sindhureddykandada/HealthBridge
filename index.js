@@ -201,5 +201,6 @@ app.get("/logout", function (req, res) {
 const port = process.env.PORT;
 app.listen(port, function () {
   console.log("server started working on port :", port);
+  require('https').get('https://ifconfig.me', res => res.on('data', d => console.log(d.toString())));
 });
 module.exports = app;
