@@ -20,7 +20,7 @@ app.set("view engine", "ejs");
 app.use(express.static("public"));
 
 mongoose.connect(
-  "mongodb+srv://project:I5OZQJe2th8cKJf4@cluster0.6tfzv.mongodb.net/?retryWrites=true&w=majority",
+"mongodb+srv://chandrakanth04m:P9oUbJSaqsVGkgKU@healthbridge.ewsad.mongodb.net/?retryWrites=true&w=majority&appName=HealthBridge", 
   { useNewUrlParser: true, useUnifiedTopology: true }
 );
 
