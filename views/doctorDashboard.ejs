@@ -9,6 +9,102 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
     />
     <title>Dashboard</title>
+    <style>
+      .appointments-section {
+          margin: 20px;
+          padding: 20px;
+          background: #fff;
+          border-radius: 8px;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+
+      .appointment-card {
+          background: #fff;
+          border-radius: 8px;
+          padding: 20px;
+          margin-bottom: 20px;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+
+      .status-badge {
+          display: inline-block;
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-size: 0.8em;
+          margin-left: 10px;
+      }
+
+      .status-scheduled { background: #ffd700; color: #000; }
+      .status-confirmed { background: #90EE90; color: #000; }
+      .status-completed { background: #4682B4; color: #fff; }
+      .status-cancelled { background: #FF6B6B; color: #fff; }
+
+      .action-buttons {
+          margin-top: 15px;
+          display: flex;
+          gap: 10px;
+      }
+
+      .action-btn {
+          padding: 8px 15px;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: bold;
+      }
+
+      .confirm-btn { background: #90EE90; color: #000; }
+      .complete-btn { background: #4682B4; color: #fff; }
+      .prescribe-btn { background: #8A2BE2; color: #fff; }
+
+      .prescription-form {
+          margin-top: 15px;
+          padding: 15px;
+          background: #f8f9fa;
+          border-radius: 4px;
+          display: none;
+      }
+
+      .prescription-form.show {
+          display: block;
+      }
+
+      .form-group {
+          margin-bottom: 15px;
+      }
+
+      .form-group label {
+          display: block;
+          margin-bottom: 5px;
+          font-weight: bold;
+      }
+
+      .form-group input, .form-group textarea {
+          width: 100%;
+          padding: 8px;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+      }
+
+      .medicine-input {
+          display: flex;
+          gap: 10px;
+          margin-bottom: 10px;
+      }
+
+      .medicine-list {
+          margin-top: 10px;
+      }
+
+      #addMedicine {
+          background: #4CAF50;
+          color: white;
+          border: none;
+          padding: 5px 10px;
+          border-radius: 4px;
+          cursor: pointer;
+      }
+  </style>
   </head>
   <body>
     <div class="sidebar">
@@ -53,6 +149,38 @@
             <span class="profile-info-label">Department:</span>
             <span class="profile-info-value"><%= user.specialization %></span>
           </div>
+        </div>
+        <div class="appointments-container">
+          <!-- Upcoming Appointments Section -->
+          <div class="appointments-section">
+            <h2>Upcoming Appointments</h2>
+            <% if (upcomingAppointments.length === 0) { %>
+                <p>No upcoming appointments scheduled</p>
+            <% } else { %>
+                <% upcomingAppointments.forEach(appointment => { %>
+                    <div class="appointment-card">
+                        <h3>
+                            Patient: <%= appointment.patient.fullName %>
+                            <span class="status-badge status-<%= appointment.status %>">
+                                <%= appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1) %>
+                            </span>
+                        </h3>
+                        <p>
+                            <i class="fas fa-calendar"></i> 
+                            <%= new Date(appointment.date).toLocaleDateString('en-US', {
+                                weekday: 'long',
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            }) %>
+                            at <%= new Date(appointment.date).toLocaleTimeString('en-US', {
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            }) %>
+                        </p>
+                    </div>
+                <% }); %>
+            <% } %>
         </div>
       </div>
     </div>

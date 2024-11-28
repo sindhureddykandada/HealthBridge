@@ -48,40 +48,99 @@
             <div class="doctor-name">Dr. <%= doctor.fullName %></div>
             <div class="doctor-designation"><%= doctor.specialization %></div>
 
-            <form method="GET" action="/patient-bookappointments" onsubmit="return validateDate(<%= index %>)">
+            <form method="GET" action="/patient-bookappointments" onsubmit="return validateDateTime(<%= index %>)">
               <input type="hidden" name="doctorId" value="<%= doctor._id %>">
               <input type="hidden" name="userId" value="<%= user._id %>">
-
-              <label for="appointmentDate<%= index %>">Select Date:</label>
-              <input type="date" id="appointmentDate<%= index %>" name="appointmentDate" required>
-
+              
+              <div class="form-group">
+                <label for="appointmentDate<%= index %>">Select Date:</label>
+                <input 
+                  type="date" 
+                  id="appointmentDate<%= index %>" 
+                  name="appointmentDate" 
+                  required
+                  class="form-control"
+                >
+              </div>
+            
+              <div class="form-group">
+                <label for="appointmentTime<%= index %>">Select Time:</label>
+                <select 
+                  id="appointmentTime<%= index %>" 
+                  name="appointmentTime" 
+                  required
+                  class="form-control"
+                >
+                  <option value="">Choose a time</option>
+                  <% for(let hour = 9; hour <= 17; hour++) { %>
+                    <% for(let minute of ['00', '30']) { %>
+                      <option value="<%= hour.toString().padStart(2, '0') %>:<%= minute %>">
+                        <%= hour.toString().padStart(2, '0') %>:<%= minute %>
+                      </option>
+                    <% } %>
+                  <% } %>
+                </select>
+              </div>
+            
               <button type="submit" class="see-more-button">Book appointment</button>
             </form>
-
+            
+            <style>
+            .form-group {
+              margin-bottom: 1rem;
+            }
+            
+            .form-control {
+              width: 80%;
+              padding: 0.5rem;
+              border: 1px solid #ddd;
+              border-radius: 4px;
+              margin-top: 0.25rem;
+            }
+            
+            select.form-control {
+              background-color: white;
+            }
+            
+            .see-more-button {
+              width: 100%;
+              margin-top: 1rem;
+            }
+            </style>
+            
             <script>
-              function setMinDate(index) {
-                const today = new Date().toISOString().split('T')[0];
-                document.getElementById('appointmentDate' + index).setAttribute('min', today);
+            function setMinDate(index) {
+              const today = new Date();
+              const tomorrow = new Date(today);
+              tomorrow.setDate(tomorrow.getDate() + 1);
+              const minDate = tomorrow.toISOString().split('T')[0];
+              document.getElementById('appointmentDate' + index).setAttribute('min', minDate);
+            }
+            
+            function validateDateTime(index) {
+              const appointmentDate = new Date(document.getElementById('appointmentDate' + index).value);
+              const appointmentTime = document.getElementById('appointmentTime' + index).value;
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+            
+              if (appointmentDate < today) {
+                alert("Please select a future date for your appointment.");
+                return false;
               }
-
-              window.onload = function() {
-                <% doctors.forEach((doctor, index) => { %>
-                  setMinDate(<%= index %>);
-                <% }); %>
-              };
-
-              function validateDate(index) {
-                const appointmentDate = new Date(document.getElementById('appointmentDate' + index).value);
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-
-                if (appointmentDate < today) {
-                  alert("You cannot book an appointment for a past date.");
-                  return false;
-                }
-
-                return true;
+            
+              if (!appointmentTime) {
+                alert("Please select an appointment time.");
+                return false;
               }
+              
+              return true;
+            }
+            
+            window.onload = function() {
+              <% doctors.forEach((doctor, index) => { %>
+                setMinDate(<%= index %>);
+              <% }); %>
+            };
             </script>
           </div>
         <% }); %>

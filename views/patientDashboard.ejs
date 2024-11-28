@@ -1,58 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/dashboard.css" />
     <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
     />
-    <title>Dashboard</title>
-  </head>
-  <body>
+    <title>Patient Dashboard</title>
+    <style>
+        .appointments-section {
+            margin: 20px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .appointment-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+        .status-scheduled { background: #ffd700; color: #000; }
+        .status-confirmed { background: #90EE90; color: #000; }
+        .status-completed { background: #4682B4; color: #fff; }
+        .status-cancelled { background: #FF6B6B; color: #fff; }
+        .profile-container {
+            margin: 20px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .profile-info {
+            margin-top: 10px;
+        }
+        .success-message {
+            margin: 20px;
+            padding: 15px;
+            background: #90EE90;
+            color: #000;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .appointment-datetime {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .appointment-datetime i {
+            color: #007bff;
+            margin-right: 5px;
+        }
+        .appointment-info {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
     <div class="sidebar">
-      <div class="logo">
-        <img src="assets/profile.png" alt="Profile" />
-        <div class="logo-description">
-          <p>Patient</p>
-          <p><%= user.email %></p>
+        <div class="logo">
+            <img src="assets/profile.png" alt="logo" />
+            <div class="logo-description">
+                <p>Patient</p>
+                <p><%= user.email %></p>
+            </div>
         </div>
-      </div>
-
-      <ul class="menu">
-        <li><i class="fas fa-home"></i> <a href="#">Dashboard</a></li>
-        <li><i class="fas fa-calendar-alt"></i> <a href="/patient-appointments?userId=<%= user._id %>">Appointments</a></li>
-        <li><i class="fas fa-user-md"></i> <a href="/patient-doctors">Doctors</a></li>
-      </ul>
+        <hr />
+        <ul class="menu">
+            <li><i class="fas fa-home"></i> <a href="#">Dashboard</a></li>
+            <li><i class="fas fa-calendar-alt"></i> <a href="/patient-appointments?userId=<%= user._id %>">Appointments</a></li>
+            <li><i class="fas fa-user-md"></i> <a href="/patient-doctors">Doctors</a></li>
+        </ul>
     </div>
-
     <div class="Side">
-      <div class="topbar">
-        <div class="date">
-          <p>Date: <%= new Date().toLocaleDateString() %></p>
+        <div class="topbar">
+            <div class="date">
+                <p>Date: <%= new Date().toLocaleDateString() %></p>
+            </div>
+            <div class="logout">
+                <form action="/logout" method="GET">
+                    <button type="submit">Logout</button>
+                </form>
+            </div>
         </div>
-
-        <div class="logout">
-          <form action="/logout" method="GET">
-            <button type="submit">Logout</button>
-          </form>
+        <div class="appointments-container">
+            <% if (showMessage) { %>
+                <p class="success-message"><%= message %></p>
+            <% } %>
+            <div class="profile-container">
+                <h2><%= user.fullName %></h2>
+                <div class="profile-info">
+                    <span class="profile-info-label">Email:</span>
+                    <span class="profile-info-value"><%= user.email %></span>
+                </div>
+            </div>
+            <div class="appointments-section">
+                <h2>Upcoming Appointments</h2>
+                <% if (upcomingAppointments.length === 0) { %>
+                    <p>No upcoming appointments scheduled</p>
+                <% } else { %>
+                    <% upcomingAppointments.forEach(appointment => { %>
+                        <div class="appointment-card">
+                            <h3 class="appointment-info">
+                                <i class="fas fa-user-md"></i>
+                                Doctor: <%= appointment.doctorName %>
+                                <span class="status-badge status-<%= appointment.status.toLowerCase() %>">
+                                    <%= appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1) %>
+                                </span>
+                            </h3>
+                            <p class="appointment-info">
+                                <i class="fas fa-stethoscope"></i>
+                                Specialization: <%= appointment.doctorSpecialization %>
+                            </p>
+                            <div class="appointment-datetime">
+                                <p>
+                                    <i class="fas fa-calendar"></i>
+                                    <%= new Date(appointment.date).toLocaleDateString('en-US', {
+                                        weekday: 'long', 
+                                        year: 'numeric', 
+                                        month: 'long', 
+                                        day: 'numeric'
+                                    }) %>
+                                </p>
+                                <p>
+                                    <i class="fas fa-clock"></i>
+                                    <%= new Date(appointment.date).toLocaleTimeString('en-US', {
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    }) %>
+                                </p>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } %>
+            </div>
         </div>
-      </div>
-
-      <div class="appointments-container">
-        <% if (showMessage) { %>
-          <p class="success-message"><%= message %></p>
-        <% } %>
-
-        <div class="profile-container">
-          <div class="profile-name"><%= user.fullName %></div>
-          <div class="profile-info">
-            <span class="profile-info-label">Email:</span>
-            <span class="profile-info-value"><%= user.email %></span>
-          </div>
-        </div>
-      </div>
     </div>
-  </body>
+</body>
 </html>

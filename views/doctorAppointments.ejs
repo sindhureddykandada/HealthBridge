@@ -145,7 +145,16 @@
                             </h3>
                             <p>
                                 <i class="fas fa-calendar"></i> 
-                                <%= appointment.formattedDate %>
+                                <%= new Date(appointment.date).toLocaleDateString('en-US', {
+                                    weekday: 'long',
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                }) %>
+                                at <%= new Date(appointment.date).toLocaleTimeString('en-US', {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                }) %>
                             </p>
                             <div class="action-buttons">
                                 <% if (appointment.status === 'scheduled') { %>

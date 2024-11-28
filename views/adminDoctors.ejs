@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <title>Manage Doctors</title>
+    <style>
+        .add-doctor-form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .doctors-list {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .doctor-row {
+            display: grid;
+            grid-template-columns: 2fr 2fr 2fr 1fr;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            align-items: center;
+        }
+
+        .doctor-header {
+            font-weight: bold;
+            background: #f8f9fa;
+        }
+
+        .remove-btn {
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .success-message {
+            background: #90EE90;
+            color: #333;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <img src="assets/profile.png" alt="logo" />
+            <div class="logo-description">
+                <p class="description">Admin</p>
+                <p class="description"><%= user.email %></p>
+            </div>
+        </div>
+        <hr />
+        <ul class="menu">
+            <li><i class="fas fa-home"></i> <a href="/admin-dashboard">Dashboard</a></li>
+            <li><i class="fas fa-user-md"></i> <a href="/admin-doctors">Manage Doctors</a></li>
+        </ul>
+    </div>
+
+    <div class="Side">
+        <div class="topbar">
+            <div class="date"></div>
+            <div class="logout">
+                <form action="/logout" method="GET">
+                    <button type="submit">Logout</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="appointments-container">
+            <h2>Manage Doctors</h2>
+
+            <% if (successMessage) { %>
+                <div class="success-message"><%= successMessage %></div>
+            <% } %>
+
+            <div class="add-doctor-form">
+                <h3>Add New Doctor</h3>
+                <form action="/add-doctor" method="POST">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" name="fullName" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="specialization">Specialization</label>
+                        <input type="text" id="specialization" name="specialization" required />
+                    </div>
+                    <button type="submit" class="btn-login">Add Doctor</button>
+                </form>
+            </div>
+
+            <div class="doctors-list">
+                <h3>Current Doctors</h3>
+                <div class="doctor-row doctor-header">
+                    <div>Name</div>
+                    <div>Email</div>
+                    <div>Specialization</div>
+                    <div>Action</div>
+                </div>
+                <% doctors.forEach(doctor => { %>
+                    <div class="doctor-row">
+                        <div>Dr. <%= doctor.fullName %></div>
+                        <div><%= doctor.email %></div>
+                        <div><%= doctor.specialization %></div>
+                        <div>
+                            <form action="/remove-doctor" method="POST" style="display: inline;">
+                                <input type="hidden" name="doctorId" value="<%= doctor._id %>">
+                                <button type="submit" class="remove-btn">Remove</button>
+                            </form>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

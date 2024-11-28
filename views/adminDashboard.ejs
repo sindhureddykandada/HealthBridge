@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <title>Admin Dashboard</title>
+    <style>
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .recent-appointments {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .appointment-row {
+            display: grid;
+            grid-template-columns: 2fr 2fr 2fr 1fr 1fr;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .appointment-row:hover {
+            background: #f8f9fa;
+        }
+
+        .appointment-header {
+            font-weight: bold;
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <img src="assets/profile.png" alt="logo" />
+            <div class="logo-description">
+                <p class="description">Admin</p>
+                <p class="description"><%= user.email %></p>
+            </div>
+        </div>
+        <hr />
+        <ul class="menu">
+            <li><i class="fas fa-home"></i> <a href="/admin-dashboard">Dashboard</a></li>
+            <li><i class="fas fa-user-md"></i> <a href="/admin-doctors">Manage Doctors</a></li>
+        </ul>
+    </div>
+
+    <div class="Side">
+        <div class="topbar">
+            <div class="date"></div>
+            <div class="logout">
+                <form action="/logout" method="GET">
+                    <button type="submit">Logout</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="appointments-container">
+            <h2>Analytics Overview</h2>
+            
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-number"><%= doctorCount %></div>
+                    <div class="stat-label">Total Doctors</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number"><%= patientCount %></div>
+                    <div class="stat-label">Total Patients</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number"><%= appointmentCount %></div>
+                    <div class="stat-label">Total Appointments</div>
+                </div>
+            </div>
+
+            <div class="recent-appointments">
+                <h3>Recent Appointments</h3>
+                <div class="appointment-row appointment-header">
+                    <div>Doctor</div>
+                    <div>Patient</div>
+                    <div>Date</div>
+                    <div>Status</div>
+                    <div>Type</div>
+                </div>
+                <% recentAppointments.forEach(appointment => { %>
+                    <div class="appointment-row">
+                        <div>
+                            <%= appointment.doctor && appointment.doctor.fullName ? 
+                                `Dr. ${appointment.doctor.fullName}` : 'Deleted Doctor' %>
+                        </div>
+                        <div>
+                            <%= appointment.patient && appointment.patient.fullName ? 
+                                appointment.patient.fullName : 'Deleted Patient' %>
+                        </div>
+                        <div><%= new Date(appointment.date).toLocaleDateString() %>
+                            at <%= new Date(appointment.date).toLocaleTimeString('en-US', {
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            }) %></div>
+                        <div><%= appointment.status %></div>
+                        <div>
+                            <%= appointment.doctor && appointment.doctor.specialization ? 
+                                appointment.doctor.specialization : 'N/A' %>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
